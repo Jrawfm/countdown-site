@@ -35,7 +35,13 @@
    { "4.png",title: "金幣加倍週"}
 ];
 
-    let currentImageIndex = 0;
+   let currentImageIndex = 0;
+
+function updateImage() {
+  const image = imageUrls[currentImageIndex];
+  imageElement.src = image.src;
+  imageElement.title = image.title;
+}
     let lastTriggerDate = null; // 上一次觸發換圖的時間
 
     function getNextMondayAt7PM() {
