@@ -1,6 +1,96 @@
-const imageUrls = [
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>圖片輪播倒數</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+    #timer {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    #image {
+      width: 300px;
+      height: auto;
+      transition: opacity 1s;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="timer">計算中...</div>
+  <img id="image" src="https://via.placeholder.com/300x200?text=圖片1" alt="圖片輪播示意" />
+
+  <script>
+    const imageElement = document.getElementById("image");
+
+   const imageUrls = [
   "images/1.jpg",
   "images/2.jpg",
   "images/3.jpg",
   "images/4.jpg"
 ];
+
+    let currentImageIndex = 0;
+    let lastTriggerDate = null; // 上一次觸發換圖的時間
+
+    function getNextMondayAt7PM() {
+      const now = new Date();
+      const day = now.getDay(); // Sunday = 0, Monday = 1
+      const daysUntilMonday = (8 - day) % 7 || 7;
+
+      const nextMonday = new Date(now);
+      nextMonday.setDate(now.getDate() + daysUntilMonday);
+      nextMonday.setHours(19, 0, 0, 0);
+
+      if (day === 1 && now.getHours() < 19) {
+        nextMonday.setDate(now.getDate());
+      }
+
+      return nextMonday;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const target = getNextMondayAt7PM();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        document.getElementById("timer").innerText = "時間到了！";
+
+        // 檢查是否已經切換過圖片（避免每秒切換一次）
+        const today = now.toDateString();
+        if (lastTriggerDate !== today) {
+          currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+
+          // 淡出再切換圖片
+          imageElement.style.opacity = 0;
+          setTimeout(() => {
+            imageElement.src = imageUrls[currentImageIndex];
+            imageElement.style.opacity = 1;
+          }, 500);
+
+          lastTriggerDate = today;
+        }
+
+        return;
+      }
+
+      const seconds = Math.floor((diff / 1000) % 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      document.getElementById("timer").innerText =
+        `${days}天 ${hours}時 ${minutes}分 ${seconds}秒`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
