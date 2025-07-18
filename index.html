@@ -4,67 +4,83 @@
   <meta charset="UTF-8">
   <title>圖片輪播倒數</title>
   <style>
-  body {
-    font-family: "Segoe UI", sans-serif;
-    text-align: center;
-    margin-top: 30px;
-  }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      margin-top: 30px;
+    }
 
-  #timer {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    padding: 12px 20px;
-    display: inline-block;
-    background-color: #f0f8ff;
-    border: 2px solid #3399ff;
-    border-radius: 10px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  }
+    #container {
+      display: inline-block;
+      position: relative;
+    }
 
-  .time-block {
-    padding: 4px 8px;
-    margin: 0 4px;
-    border-radius: 5px;
-    font-weight: bold;
-  }
+    #timer {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      padding: 10px 18px;
+      display: inline-block;
+      background-color: #f0f8ff;
+      border: 2px solid #3399ff;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-  .days, .hours, .minutes {
-    background-color: #e0f0ff;
-    color: #0066cc;
-  }
+    .time-block {
+      padding: 4px 8px;
+      margin: 0 4px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
 
-  .seconds {
-    background-color: #ffe0e0;
-    color: #cc0000;
-  }
-</style>
+    .days, .hours, .minutes {
+      background-color: #e0f0ff;
+      color: #0066cc;
+    }
+
+    .seconds {
+      background-color: #ffe0e0;
+      color: #cc0000;
+    }
+
+    #image {
+      width: 150px;
+      height: auto;
+      transition: opacity 1s;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
-  
-  <div id="timer">計算中...</div>
-  <img id="image" src="2.png" alt="圖片2" title= "改屬性週"  />
+
+  <div id="container">
+    <div id="timer">計算中...</div>
+    <img id="image" src="2.png" alt="圖片2" title="改屬性週" />
+  </div>
 
   <script>
     const imageElement = document.getElementById("image");
 
-   const imageUrls = [
-  { src: "3.png", title: "天降加速週" },
-  { src: "4.png", title: "金幣加倍週" },
-  { src: "1.png", title: "經驗加倍週" },
-  { src: "2.png", title: "改屬性週" }
-];
+    const imageUrls = [
+      { src: "3.png", title: "天降加速週" },
+      { src: "4.png", title: "金幣加倍週" },
+      { src: "1.png", title: "經驗加倍週" },
+      { src: "2.png", title: "改屬性週" }
+    ];
 
-   let currentImageIndex = 0;
+    let currentImageIndex = 0;
     function updateImage() {
-  const image = imageUrls[currentImageIndex];
-  imageElement.src = image.src;
-  imageElement.title = image.title;
-}
-    let lastTriggerDate = null; // 上一次觸發換圖的時間
+      const image = imageUrls[currentImageIndex];
+      imageElement.src = image.src;
+      imageElement.title = image.title;
+    }
+
+    let lastTriggerDate = null;
 
     function getNextMondayAt7PM() {
       const now = new Date();
-      const day = now.getDay(); // Sunday = 0, Monday = 1
+      const day = now.getDay();
       const daysUntilMonday = (8 - day) % 7 || 7;
 
       const nextMonday = new Date(now);
@@ -86,12 +102,10 @@
       if (diff <= 0) {
         document.getElementById("timer").innerText = "時間到了！";
 
-        // 檢查是否已經切換過圖片（避免每秒切換一次）
         const today = now.toDateString();
         if (lastTriggerDate !== today) {
           currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
 
-          // 淡出再切換圖片
           imageElement.style.opacity = 0;
           setTimeout(() => {
             imageElement.src = imageUrls[currentImageIndex];
@@ -110,14 +124,15 @@
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
       document.getElementById("timer").innerHTML =
-  `<span class="time-block days">${days}天</span>
-   <span class="time-block hours">${hours}時</span>
-   <span class="time-block minutes">${minutes}分</span>
-   <span class="time-block seconds">${seconds}</span>`;
+        `<span class="time-block days">${days}天</span>
+         <span class="time-block hours">${hours}時</span>
+         <span class="time-block minutes">${minutes}分</span>
+         <span class="time-block seconds">${seconds}秒</span>`;
     }
 
     setInterval(updateCountdown, 1000);
     updateCountdown();
   </script>
+
 </body>
 </html>
