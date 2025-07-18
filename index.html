@@ -91,10 +91,10 @@
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
       document.getElementById("timer").innerHTML =
-  `<span style="color: blue;">${days}</span>天 
-   <span style="color: blue;">${hours}</span>時 
-   <span style="color: blue;">${minutes}</span>分 
-   <span style="color: red;">${seconds}</span>秒`;
+  `<span style="color: blue;">${days}</span>: 
+   <span style="color: blue;">${hours}</span>: 
+   <span style="color: blue;">${minutes}</span>: 
+   <span style="color: red;">${seconds}</span>`;
     }
 
     setInterval(updateCountdown, 1000);
