@@ -4,21 +4,40 @@
   <meta charset="UTF-8">
   <title>圖片輪播倒數</title>
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      text-align: center;
-      margin-top: 30px;
-    }
-    #timer {
-      font-size: 1rem;
-      margin-bottom: 15px;
-    }
-    #image {
-      width: 150px;
-      height: auto;
-      transition: opacity 1s;
-    }
-  </style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  #timer {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    padding: 12px 20px;
+    display: inline-block;
+    background-color: #f0f8ff;
+    border: 2px solid #3399ff;
+    border-radius: 10px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .time-block {
+    padding: 4px 8px;
+    margin: 0 4px;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+
+  .days, .hours, .minutes {
+    background-color: #e0f0ff;
+    color: #0066cc;
+  }
+
+  .seconds {
+    background-color: #ffe0e0;
+    color: #cc0000;
+  }
+</style>
 </head>
 <body>
   
@@ -91,10 +110,10 @@
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
       document.getElementById("timer").innerHTML =
-  `<span style="color: blue;">${days}天</span> 
-   <span style="color: blue;">${hours}時</span> 
-   <span style="color: blue;">${minutes}分</span> 
-   <span style="color: red;">${seconds}</span>`;
+  `<span class="time-block days">${days}天</span>
+   <span class="time-block hours">${hours}時</span>
+   <span class="time-block minutes">${minutes}分</span>
+   <span class="time-block seconds">${seconds}</span>`;
     }
 
     setInterval(updateCountdown, 1000);
