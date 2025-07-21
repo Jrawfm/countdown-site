@@ -81,10 +81,22 @@ function updateImage() {
 function getNextMondayAt7PM() {
   const now = new Date();
   const result = new Date(now);
-  result.setDate(result.getDate() + ((8 - result.getDay()) % 7));
+
+  // 計算目前是星期幾（週日是 0）
+  const currentDay = now.getDay();
+  const daysUntilNextMonday = (8 - currentDay) % 7 || 7;
+
+  result.setDate(now.getDate() + daysUntilNextMonday);
   result.setHours(19, 0, 0, 0);
+
+  // 如果今天是週一，並且已經過了 19:00，那就往下週一推
+  if (currentDay === 1 && now.getHours() >= 19) {
+    result.setDate(result.getDate() + 7);
+  }
+
   return result;
 }
+
 
 function updateCountdown() {
   const now = new Date();
