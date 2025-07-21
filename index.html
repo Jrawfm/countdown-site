@@ -82,20 +82,21 @@ function getNextMondayAt7PM() {
   const now = new Date();
   const result = new Date(now);
 
-  // 計算目前是星期幾（週日是 0）
-  const currentDay = now.getDay();
-  const daysUntilNextMonday = (8 - currentDay) % 7 || 7;
+  // 先設定這週的週一 19:00
+  const currentDay = now.getDay(); // 週日是 0
+  const daysSinceMonday = (currentDay + 6) % 7; // 把週一變成 0
 
-  result.setDate(now.getDate() + daysUntilNextMonday);
+  result.setDate(now.getDate() - daysSinceMonday);
   result.setHours(19, 0, 0, 0);
 
-  // 如果今天是週一，並且已經過了 19:00，那就往下週一推
-  if (currentDay === 1 && now.getHours() >= 19) {
+  // 如果現在時間已經超過這週一的 19:00，則往下一週推
+  if (now >= result) {
     result.setDate(result.getDate() + 7);
   }
 
   return result;
 }
+
 
 
 function updateCountdown() {
