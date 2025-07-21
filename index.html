@@ -107,14 +107,15 @@ function updateCountdown() {
 
   // 觸發換圖邏輯
   if (diff <= 0) {
-    const lastSwitch = localStorage.getItem("lastSwitch");
-    const targetStr = target.toDateString();
+   const targetTime = target.getTime();
+const lastSwitch = parseInt(localStorage.getItem("lastSwitch") || "0", 10);
 
-    if (lastSwitch !== targetStr) {
-      // 換下一張圖
+if (lastSwitch !== targetTime) {
+  // 換圖
+  localStorage.setItem("lastSwitch", targetTime.toString());
       currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
       localStorage.setItem("currentImageIndex", currentImageIndex.toString());
-      localStorage.setItem("lastSwitch", targetStr);
+     
 
       imageElement.style.opacity = 0;
       setTimeout(() => {
