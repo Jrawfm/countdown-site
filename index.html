@@ -56,82 +56,79 @@
 
   <div id="container">
     <div id="timer">計算中...</div>
-    <img id="image" src="2.png" alt="圖片2" title="改屬性週" />
+    <img id="image" src="3.png" alt="圖片2" title="天降加速週" />
   </div>
 
   <script>
     const imageElement = document.getElementById("image");
 
-    const imageUrls = [
-      { src: "3.png", title: "天降加速週" },
-      { src: "4.png", title: "金幣加倍週" },
-      { src: "1.png", title: "經驗加倍週" },
-      { src: "2.png", title: "改屬性週" }
-    ];
+const imageUrls = [
+  { src: "4.png", title: "金幣加倍週" },
+  { src: "1.png", title: "經驗加倍週" },
+  { src: "2.png", title: "改屬性週" },
+  { src: "3.png", title: "天降加速週" }
+];
 
-    let currentImageIndex = 0;
-    function updateImage() {
-      const image = imageUrls[currentImageIndex];
-      imageElement.src = image.src;
-      imageElement.title = image.title;
+let currentImageIndex = parseInt(localStorage.getItem("currentImageIndex") || "0", 10);
+updateImage();
+
+function updateImage() {
+  const image = imageUrls[currentImageIndex];
+  imageElement.src = image.src;
+  imageElement.title = image.title;
+}
+
+function getNextMondayAt7PM() {
+  const now = new Date();
+  const result = new Date(now);
+  result.setDate(result.getDate() + ((8 - result.getDay()) % 7));
+  result.setHours(19, 0, 0, 0);
+  return result;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const target = getNextMondayAt7PM();
+
+  const diff = target - now;
+
+  // 觸發換圖邏輯
+  if (diff <= 0) {
+    const lastSwitch = localStorage.getItem("lastSwitch");
+    const targetStr = target.toDateString();
+
+    if (lastSwitch !== targetStr) {
+      // 換下一張圖
+      currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+      localStorage.setItem("currentImageIndex", currentImageIndex.toString());
+      localStorage.setItem("lastSwitch", targetStr);
+
+      imageElement.style.opacity = 0;
+      setTimeout(() => {
+        updateImage();
+        imageElement.style.opacity = 1;
+      }, 500);
     }
 
-    let lastTriggerDate = null;
+    document.getElementById("timer").innerText = "時間到了！";
+    return;
+  }
 
-    function getNextMondayAt7PM() {
-      const now = new Date();
-      const day = now.getDay();
-      const daysUntilMonday = (8 - day) % 7 || 7;
+  const seconds = Math.floor((diff / 1000) % 60);
+  const minutes = Math.floor((diff / 1000 / 60) % 60);
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      const nextMonday = new Date(now);
-      nextMonday.setDate(now.getDate() + daysUntilMonday);
-      nextMonday.setHours(19, 0, 0, 0);
+  document.getElementById("timer").innerHTML =
+    `<span class="time-block days">${days}天</span>
+     <span class="time-block hours">${hours}時</span>
+     <span class="time-block minutes">${minutes}分</span>
+     <span class="time-block seconds">${seconds}秒</span>`;
+}
 
-      if (day === 1 && now.getHours() < 19) {
-        nextMonday.setDate(now.getDate());
-      }
+setInterval(updateCountdown, 1000);
+updateCountdown();
 
-      return nextMonday;
-    }
-
-    function updateCountdown() {
-      const now = new Date();
-      const target = getNextMondayAt7PM();
-      const diff = target - now;
-
-      if (diff <= 0) {
-        document.getElementById("timer").innerText = "時間到了！";
-
-        const today = now.toDateString();
-        if (lastTriggerDate !== today) {
-          currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
-
-          imageElement.style.opacity = 0;
-          setTimeout(() => {
-            imageElement.src = imageUrls[currentImageIndex];
-            imageElement.style.opacity = 1;
-          }, 500);
-
-          lastTriggerDate = today;
-        }
-
-        return;
-      }
-
-      const seconds = Math.floor((diff / 1000) % 60);
-      const minutes = Math.floor((diff / 1000 / 60) % 60);
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-      document.getElementById("timer").innerHTML =
-        `<span class="time-block days">${days}天</span>
-         <span class="time-block hours">${hours}時</span>
-         <span class="time-block minutes">${minutes}分</span>
-         <span class="time-block seconds">${seconds}秒</span>`;
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
   </script>
 
 </body>
