@@ -61,6 +61,7 @@
 
   <script>
     const imageElement = document.getElementById("image");
+    const timerElement = document.getElementById("timer");
 
     const imageUrls = [
       { src: "3.png", title: "天降加速週" },
@@ -69,42 +70,54 @@
       { src: "2.png", title: "改屬性週" }
     ];
 
+    // 取得目前應顯示哪一張圖片
     function getCurrentImageIndex() {
-      const startDate = new Date("2024-01-01T19:00:00+08:00"); // 起始週一 19:00，請根據你想要的起點設定
+      const startDate = new Date("2024-01-01T19:00:00+08:00"); // 起始週一 19:00
       const now = new Date();
       const weekMs = 7 * 24 * 60 * 60 * 1000;
       const diffWeeks = Math.floor((now - startDate) / weekMs);
       return diffWeeks % imageUrls.length;
     }
 
+    // 顯示當前圖片
     function updateImage() {
       const index = getCurrentImageIndex();
       const image = imageUrls[index];
+
+      // 加載錯誤處理（可選）
+      imageElement.onerror = () => {
+        imageElement.src = "";
+        imageElement.alt = "找不到圖片";
+        imageElement.title = "找不到圖片";
+      };
+
       imageElement.src = image.src;
-      imageElement.title = image.title;
       imageElement.alt = image.title;
+      imageElement.title = image.title;
     }
 
+    // 取得下一個「週一19:00」
     function getNextMondayAt7PM() {
-  const now = new Date();
-  const day = now.getDay(); // Sunday is 0
-  const distanceToMonday = (8 - day) % 7 || 7; // 保證距離下個禮拜一
+      const now = new Date();
+      const day = now.getDay(); // 週日是0
+      const distanceToMonday = (8 - day) % 7 || 7;
 
-  const nextMonday = new Date(now);
-  nextMonday.setDate(now.getDate() + distanceToMonday);
-  nextMonday.setHours(19, 0, 0, 0);
+      const nextMonday = new Date(now);
+      nextMonday.setDate(now.getDate() + distanceToMonday);
+      nextMonday.setHours(19, 0, 0, 0);
 
-  return nextMonday;
-}
+      return nextMonday;
+    }
 
+    // 更新倒數計時
     function updateCountdown() {
       const now = new Date();
       const target = getNextMondayAt7PM();
       const diff = target - now;
 
       if (diff <= 0) {
-        document.getElementById("timer").innerText = "時間到了！";
-        updateImage();
+        timerElement.innerText = "時間到了！";
+        updateImage(); // 可能需要更新圖片
         return;
       }
 
@@ -113,16 +126,17 @@
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      document.getElementById("timer").innerHTML =
+      timerElement.innerHTML =
         `<span class="time-block days">${days}天</span>
          <span class="time-block hours">${hours}時</span>
          <span class="time-block minutes">${minutes}分</span>
          <span class="time-block seconds">${seconds}秒</span>`;
     }
 
-    updateImage();               // 初始化圖片
-    setInterval(updateCountdown, 1000); // 倒數計時
-    updateCountdown();           // 初始化計時
+    // 初始化
+    updateImage();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 
 </body>
