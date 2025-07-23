@@ -86,20 +86,16 @@
     }
 
     function getNextMondayAt7PM() {
-      const now = new Date();
-      const result = new Date(now);
-      const currentDay = now.getDay(); // 週日是 0
-      const daysSinceMonday = (currentDay + 6) % 7;
+  const now = new Date();
+  const day = now.getDay(); // Sunday is 0
+  const distanceToMonday = (8 - day) % 7 || 7; // 保證距離下個禮拜一
 
-      result.setDate(now.getDate() - daysSinceMonday);
-      result.setHours(19, 0, 0, 0);
+  const nextMonday = new Date(now);
+  nextMonday.setDate(now.getDate() + distanceToMonday);
+  nextMonday.setHours(19, 0, 0, 0);
 
-      if (now >= result) {
-        result.setDate(result.getDate() + 7);
-      }
-
-      return result;
-    }
+  return nextMonday;
+}
 
     function updateCountdown() {
       const now = new Date();
