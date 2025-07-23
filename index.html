@@ -63,13 +63,13 @@
     const imageElement = document.getElementById("image");
 
 const imageUrls = [
+  { src: "3.png", title: "天降加速週" },
   { src: "4.png", title: "金幣加倍週" },
   { src: "1.png", title: "經驗加倍週" },
-  { src: "2.png", title: "改屬性週" },
-  { src: "3.png", title: "天降加速週" }
+  { src: "2.png", title: "改屬性週" }
 ];
 
-let currentImageIndex = parseInt(localStorage.getItem("currentImageIndex") || "0", 10);
+let currentImageIndex = 0;
 updateImage();
 
 function updateImage() {
@@ -108,25 +108,18 @@ function updateCountdown() {
   // 觸發換圖邏輯
   if (diff <= 0) {
    const targetTime = target.getTime();
-const lastSwitch = parseInt(localStorage.getItem("lastSwitch") || "0", 10);
+if (diff <= 0) {
+  currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
 
-if (lastSwitch !== targetTime) {
-  // 換圖
-  localStorage.setItem("lastSwitch", targetTime.toString());
-      currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
-      localStorage.setItem("currentImageIndex", currentImageIndex.toString());
-     
+  imageElement.style.opacity = 0;
+  setTimeout(() => {
+    updateImage();
+    imageElement.style.opacity = 1;
+  }, 500);
 
-      imageElement.style.opacity = 0;
-      setTimeout(() => {
-        updateImage();
-        imageElement.style.opacity = 1;
-      }, 500);
-    }
-
-    document.getElementById("timer").innerText = "時間到了！";
-    return;
-  }
+  document.getElementById("timer").innerText = "時間到了！";
+  return;
+}
 
   const seconds = Math.floor((diff / 1000) % 60);
   const minutes = Math.floor((diff / 1000 / 60) % 60);
