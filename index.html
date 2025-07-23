@@ -56,86 +56,77 @@
 
   <div id="container">
     <div id="timer">計算中...</div>
-    <img id="image" src="3.png" alt="圖片2" title="天降加速週" />
+    <img id="image" src="" alt="圖片" title="" />
   </div>
 
   <script>
     const imageElement = document.getElementById("image");
 
-const imageUrls = [
-  { src: "3.png", title: "天降加速週" },
-  { src: "4.png", title: "金幣加倍週" },
-  { src: "1.png", title: "經驗加倍週" },
-  { src: "2.png", title: "改屬性週" }
-];
+    const imageUrls = [
+      { src: "3.png", title: "天降加速週" },
+      { src: "4.png", title: "金幣加倍週" },
+      { src: "1.png", title: "經驗加倍週" },
+      { src: "2.png", title: "改屬性週" }
+    ];
 
-let currentImageIndex = 0;
-updateImage();
+    function getCurrentImageIndex() {
+      const startDate = new Date("2024-01-01T19:00:00+08:00"); // 起始週一 19:00，請根據你想要的起點設定
+      const now = new Date();
+      const weekMs = 7 * 24 * 60 * 60 * 1000;
+      const diffWeeks = Math.floor((now - startDate) / weekMs);
+      return diffWeeks % imageUrls.length;
+    }
 
-function updateImage() {
-  const image = imageUrls[currentImageIndex];
-  imageElement.src = image.src;
-  imageElement.title = image.title;
-}
+    function updateImage() {
+      const index = getCurrentImageIndex();
+      const image = imageUrls[index];
+      imageElement.src = image.src;
+      imageElement.title = image.title;
+      imageElement.alt = image.title;
+    }
 
-function getNextMondayAt7PM() {
-  const now = new Date();
-  const result = new Date(now);
+    function getNextMondayAt7PM() {
+      const now = new Date();
+      const result = new Date(now);
+      const currentDay = now.getDay(); // 週日是 0
+      const daysSinceMonday = (currentDay + 6) % 7;
 
-  // 先設定這週的週一 19:00
-  const currentDay = now.getDay(); // 週日是 0
-  const daysSinceMonday = (currentDay + 6) % 7; // 把週一變成 0
+      result.setDate(now.getDate() - daysSinceMonday);
+      result.setHours(19, 0, 0, 0);
 
-  result.setDate(now.getDate() - daysSinceMonday);
-  result.setHours(19, 0, 0, 0);
+      if (now >= result) {
+        result.setDate(result.getDate() + 7);
+      }
 
-  // 如果現在時間已經超過這週一的 19:00，則往下一週推
-  if (now >= result) {
-    result.setDate(result.getDate() + 7);
-  }
+      return result;
+    }
 
-  return result;
-}
+    function updateCountdown() {
+      const now = new Date();
+      const target = getNextMondayAt7PM();
+      const diff = target - now;
 
+      if (diff <= 0) {
+        document.getElementById("timer").innerText = "時間到了！";
+        updateImage();
+        return;
+      }
 
+      const seconds = Math.floor((diff / 1000) % 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-function updateCountdown() {
-  const now = new Date();
-  const target = getNextMondayAt7PM();
+      document.getElementById("timer").innerHTML =
+        `<span class="time-block days">${days}天</span>
+         <span class="time-block hours">${hours}時</span>
+         <span class="time-block minutes">${minutes}分</span>
+         <span class="time-block seconds">${seconds}秒</span>`;
+    }
 
-  const diff = target - now;
-
-  // 觸發換圖邏輯
-  if (diff <= 0) {
-   const targetTime = target.getTime();
-if (diff <= 0) {
-  currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
-
-  imageElement.style.opacity = 0;
-  setTimeout(() => {
-    updateImage();
-    imageElement.style.opacity = 1;
-  }, 500);
-
-  document.getElementById("timer").innerText = "時間到了！";
-  return;
-}
-
-  const seconds = Math.floor((diff / 1000) % 60);
-  const minutes = Math.floor((diff / 1000 / 60) % 60);
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  document.getElementById("timer").innerHTML =
-    `<span class="time-block days">${days}天</span>
-     <span class="time-block hours">${hours}時</span>
-     <span class="time-block minutes">${minutes}分</span>
-     <span class="time-block seconds">${seconds}秒</span>`;
-}
-
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
+    updateImage();               // 初始化圖片
+    setInterval(updateCountdown, 1000); // 倒數計時
+    updateCountdown();           // 初始化計時
   </script>
 
 </body>
