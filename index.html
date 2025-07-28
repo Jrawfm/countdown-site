@@ -70,46 +70,51 @@
       { src: "1.png", title: "經驗加倍週" }
     ];
 
-    // 取得目前應顯示哪一張圖片
+    // 修正版：以每週一 19:00 為週期計算
     function getCurrentImageIndex() {
-      const startDate = new Date("2024-01-01T19:00:00+08:00"); // 起始週一 19:00
+      const startDate = new Date("2024-01-01T19:00:00+08:00");
       const now = new Date();
+
       const weekMs = 7 * 24 * 60 * 60 * 1000;
-      const diffWeeks = Math.floor((now - startDate) / weekMs);
-      return diffWeeks % imageUrls.length;
+      const diff = now - startDate;
+
+      const weeksPassed = Math.floor(diff / weekMs);
+      const currentWeekStart = new Date(startDate.getTime() + weeksPassed * weekMs);
+
+      // 如果當前時間尚未達到當週一 19:00，仍視為上一週
+      if (now < currentWeekStart) {
+        return (weeksPassed - 1 + imageUrls.length) % imageUrls.length;
+      } else {
+        return weeksPassed % imageUrls.length;
+      }
     }
 
-    // 顯示當前圖片
     function updateImage() {
       const index = getCurrentImageIndex();
       const image = imageUrls[index];
-
-      // 加載錯誤處理（可選）
-      imageElement.onerror = () => {
-        imageElement.src = "";
-        imageElement.alt = "找不到圖片";
-        imageElement.title = "找不到圖片";
-      };
-
       imageElement.src = image.src;
       imageElement.alt = image.title;
       imageElement.title = image.title;
     }
 
-    // 取得下一個「週一19:00」
+    // 修正版：正確取得下個週一 19:00
     function getNextMondayAt7PM() {
       const now = new Date();
-      const day = now.getDay(); // 週日是0
-      const distanceToMonday = (8 - day) % 7 || 7;
+      const result = new Date(now);
+      const day = now.getDay(); // Sunday = 0, Monday = 1
+      const isBefore7PM = now.getHours() < 19 || (now.getHours() === 19 && now.getMinutes() === 0 && now.getSeconds() === 0);
 
-      const nextMonday = new Date(now);
-      nextMonday.setDate(now.getDate() + distanceToMonday);
-      nextMonday.setHours(19, 0, 0, 0);
+      if (day === 1 && isBefore7PM) {
+        result.setHours(19, 0, 0, 0);
+      } else {
+        const daysToAdd = (8 - day) % 7 || 7;
+        result.setDate(now.getDate() + daysToAdd);
+        result.setHours(19, 0, 0, 0);
+      }
 
-      return nextMonday;
+      return result;
     }
 
-    // 更新倒數計時
     function updateCountdown() {
       const now = new Date();
       const target = getNextMondayAt7PM();
@@ -117,7 +122,6 @@
 
       if (diff <= 0) {
         timerElement.innerText = "時間到了！";
-        updateImage(); // 可能需要更新圖片
         return;
       }
 
@@ -133,10 +137,21 @@
          <span class="time-block seconds">${seconds}秒</span>`;
     }
 
-    // 初始化
+    // 初始化圖片載入錯誤處理
+    imageElement.onerror = () => {
+      imageElement.src = "";
+      imageElement.alt = "找不到圖片";
+      imageElement.title = "找不到圖片";
+    };
+
+    // 初始化與定時更新
     updateImage();
     updateCountdown();
-    setInterval(updateCountdown, 1000);
+
+    setInterval(() => {
+      updateCountdown();
+      updateImage();
+    }, 1000);
   </script>
 
 </body>
